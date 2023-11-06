@@ -1357,9 +1357,14 @@ public abstract class TokenCompleteTextView<T> extends AppCompatAutoCompleteText
         state.performBestGuess = performBestGuess;
         state.preventFreeFormText = preventFreeFormText;
         state.tokenClickStyle = tokenClickStyle;
-        Class parameterizedClass = reifyParameterizedTypeClass();
+        Class parameterizedClass = null;
+        try {
+            reifyParameterizedTypeClass();
+        } catch (final ClassCastException e) {
+            Log.w("TokenCompleteTextView", "Impossible case: " + e);
+        }
         //Our core array is Parcelable, so use that interface
-        if (Parcelable.class.isAssignableFrom(parameterizedClass)) {
+        if (parameterizedClass != null && Parcelable.class.isAssignableFrom(parameterizedClass)) {
             state.parcelableClassName = parameterizedClass.getName();
             state.baseObjects = getObjects();
         } else {
